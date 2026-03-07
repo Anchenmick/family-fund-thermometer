@@ -57,6 +57,11 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        thermo: {
+          cold: "hsl(var(--thermo-cold))",
+          warm: "hsl(var(--thermo-warm))",
+          hot: "hsl(var(--thermo-hot))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
