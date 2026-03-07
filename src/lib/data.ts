@@ -6,8 +6,8 @@ export interface FamilyMember {
 }
 
 export interface MonthlyRecord {
-  month: string; // e.g. "Jan 2025"
-  contributions: Record<string, number>; // name -> amount
+  month: string;
+  contributions: Record<string, number>;
 }
 
 export const TARGET = 40000;
@@ -22,8 +22,9 @@ export const members: FamilyMember[] = [
   { name: "Fran", shortName: "FR", monthlyDue: 500, irregular: true },
 ];
 
-// Sample data — replace with real contributions
-export const monthlyRecords: MonthlyRecord[] = [
+const STORAGE_KEY = "family-savings-records";
+
+const defaultRecords: MonthlyRecord[] = [
   {
     month: "Jan 2025",
     contributions: { Atem: 1000, Anyang: 500, Anchen: 500, Mummy: 500, Daddy: 500, Randalls: 500, Fran: 200 },
@@ -38,23 +39,34 @@ export const monthlyRecords: MonthlyRecord[] = [
   },
 ];
 
-export function getTotalBalance(): number {
-  return monthlyRecords.reduce((sum, record) => {
-    return sum + Object.values(record.contributions).reduce((s, v) => s + v, 0);
-  }, 0);
+export function loadRecords(): MonthlyRecord[] {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed)) return parsed;
+    }
+  } catch {}
+  return defaultRecords;
 }
 
-export function getMemberTotal(name: string): number {
-  return monthlyRecords.reduce((sum, record) => {
-    return sum + (record.contributions[name] || 0);
-  }, 0);
+export function saveRecords(records: MonthlyRecord[]) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
 }
 
-export function getMonthlyTotals(): { month: string; total: number; cumulative: number }[] {
+export function calcTotalBalance(records: MonthlyRecord[]): number {
+  return records.reduce((sum, r) => sum + Object.values(r.contributions).reduce((s, v) => s + v, 0), 0);
+}
+
+export function calcMemberTotal(records: MonthlyRecord[], name: string): number {
+  return records.reduce((sum, r) => sum + (r.contributions[name] || 0), 0);
+}
+
+export function calcMonthlyTotals(records: MonthlyRecord[]) {
   let cumulative = 0;
-  return monthlyRecords.map((record) => {
-    const total = Object.values(record.contributions).reduce((s, v) => s + v, 0);
+  return records.map((r) => {
+    const total = Object.values(r.contributions).reduce((s, v) => s + v, 0);
     cumulative += total;
-    return { month: record.month, total, cumulative };
+    return { month: r.month, total, cumulative };
   });
 }
