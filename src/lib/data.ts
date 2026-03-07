@@ -35,7 +35,7 @@ const defaultRecords: MonthlyRecord[] = [
   },
   {
     month: "Mar 2025",
-    contributions: { Atem: 1000, Anyang: 500, Anchen: 500, Mummy: 500, Daddy: 500, Randalls: 500, Fran: 300 },
+    contributions: { Atem: 1000, Anyang: 0, Anchen: 500, Mummy: 0, Daddy: 0, Randalls: 0, Fran: 0 },
   },
 ];
 
