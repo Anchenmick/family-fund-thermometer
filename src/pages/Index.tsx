@@ -56,6 +56,7 @@ const Index = () => {
             <div className="grid grid-cols-2 gap-3">
               <div className="rounded-lg bg-card border p-4 text-center">
                 <div className="text-2xl font-extrabold text-foreground">${balance.toLocaleString()}</div>
+                <div className="text-sm text-muted-foreground">€{balanceEur.toLocaleString()}</div>
                 <div className="text-xs text-muted-foreground">Current Balance</div>
               </div>
               <div className="rounded-lg bg-card border p-4 text-center">
