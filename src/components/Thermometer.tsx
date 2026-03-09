@@ -39,7 +39,7 @@ const Thermometer = ({ current }: ThermometerProps) => {
         </div>
 
         {/* Thermometer tube */}
-        <div className="relative w-8 rounded-t-full bg-secondary overflow-hidden border-2 border-foreground/20" style={{ height: "calc(100% - 48px)" }}>
+        <div className="relative w-8 rounded-t-full bg-secondary overflow-hidden border-2 border-foreground/20" style={{ height: "calc(100% - 28px)" }}>
           {/* Fill */}
           <div
             className="absolute bottom-0 left-0 right-0 bg-destructive transition-all duration-1000 ease-out"
