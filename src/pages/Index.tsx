@@ -30,7 +30,9 @@ const Index = () => {
     persist(records.filter((_, i) => i !== index));
   };
 
+  const USD_TO_EUR = 0.92;
   const balance = calcTotalBalance(records);
+  const balanceEur = Math.round(balance * USD_TO_EUR);
   const monthlyTotals = calcMonthlyTotals(records);
   const monthsElapsed = monthlyTotals.length;
   const avgMonthly = monthsElapsed > 0 ? balance / monthsElapsed : 0;
