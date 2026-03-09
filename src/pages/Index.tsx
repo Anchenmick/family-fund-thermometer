@@ -30,7 +30,9 @@ const Index = () => {
     persist(records.filter((_, i) => i !== index));
   };
 
+  const USD_TO_EUR = 0.92;
   const balance = calcTotalBalance(records);
+  const balanceEur = Math.round(balance * USD_TO_EUR);
   const monthlyTotals = calcMonthlyTotals(records);
   const monthsElapsed = monthlyTotals.length;
   const avgMonthly = monthsElapsed > 0 ? balance / monthsElapsed : 0;
@@ -54,6 +56,7 @@ const Index = () => {
             <div className="grid grid-cols-2 gap-3">
               <div className="rounded-lg bg-card border p-4 text-center">
                 <div className="text-2xl font-extrabold text-foreground">${balance.toLocaleString()}</div>
+                <div className="text-sm text-muted-foreground">€{balanceEur.toLocaleString()}</div>
                 <div className="text-xs text-muted-foreground">Current Balance</div>
               </div>
               <div className="rounded-lg bg-card border p-4 text-center">
