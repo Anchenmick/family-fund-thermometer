@@ -43,10 +43,17 @@ const defaultRecords: MonthlyRecord[] = [
 
 export function loadRecords(): MonthlyRecord[] {
   try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      if (Array.isArray(parsed)) return parsed;
+    const version = localStorage.getItem(DATA_VERSION_KEY);
+    if (version === CURRENT_VERSION) {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } else {
+      // Clear stale data and set new version
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.setItem(DATA_VERSION_KEY, CURRENT_VERSION);
     }
   } catch {}
   return defaultRecords;
