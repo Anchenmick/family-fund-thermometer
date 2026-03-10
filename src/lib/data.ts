@@ -61,6 +61,7 @@ export function loadRecords(): MonthlyRecord[] {
 
 export function saveRecords(records: MonthlyRecord[]) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+  localStorage.setItem(DATA_VERSION_KEY, CURRENT_VERSION);
 }
 
 export function calcTotalBalance(records: MonthlyRecord[]): number {

@@ -18,7 +18,7 @@ const Thermometer = ({ current }: ThermometerProps) => {
 
       <div className="relative flex items-end" style={{ height: 360 }}>
         {/* Scale labels on the right */}
-        <div className="absolute right-0 translate-x-full pl-2 top-0 bottom-12 flex flex-col justify-between">
+        <div className="absolute right-0 translate-x-full pl-2 top-0 bottom-0 flex flex-col justify-between">
           {steps.slice().reverse().map((val) => (
             <div key={val} className="flex items-center gap-1">
               <div className="w-3 h-px bg-foreground/40" />
@@ -30,7 +30,7 @@ const Thermometer = ({ current }: ThermometerProps) => {
         </div>
 
         {/* Tick marks on left side of tube */}
-        <div className="absolute left-0 -translate-x-full pr-0 top-0 bottom-12 flex flex-col justify-between">
+        <div className="absolute left-0 -translate-x-full pr-0 top-0 bottom-0 flex flex-col justify-between">
           {steps.slice().reverse().map((val) => (
             <div key={val} className="flex items-center justify-end">
               <div className="w-3 h-px bg-foreground/40" />
@@ -38,8 +38,8 @@ const Thermometer = ({ current }: ThermometerProps) => {
           ))}
         </div>
 
-        {/* Thermometer tube */}
-        <div className="relative w-8 rounded-t-full bg-secondary overflow-hidden border-2 border-foreground/20" style={{ height: "calc(100% - 28px)" }}>
+        {/* Thermometer tube - spans full height to align with scale */}
+        <div className="relative w-8 rounded-t-full rounded-b-full bg-secondary overflow-hidden border-2 border-foreground/20" style={{ height: "100%" }}>
           {/* Fill */}
           <div
             className="absolute bottom-0 left-0 right-0 bg-destructive transition-all duration-1000 ease-out"
@@ -47,13 +47,6 @@ const Thermometer = ({ current }: ThermometerProps) => {
           />
           {/* Shine */}
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent pointer-events-none" />
-        </div>
-
-        {/* Bulb */}
-        <div className="absolute -bottom-2 left-1/2 -translate-x-1/2">
-          <div className="w-14 h-14 rounded-full bg-destructive border-2 border-foreground/20 shadow-md flex items-center justify-center">
-            <div className="w-6 h-6 rounded-full bg-white/30" />
-          </div>
         </div>
       </div>
 
