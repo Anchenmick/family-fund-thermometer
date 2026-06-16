@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { members, MonthlyRecord } from "@/lib/data";
+import { members, MonthlyRecord, calcMonthNet } from "@/lib/data";
 import {
   Table, TableHeader, TableBody, TableHead, TableRow, TableCell,
 } from "@/components/ui/table";
