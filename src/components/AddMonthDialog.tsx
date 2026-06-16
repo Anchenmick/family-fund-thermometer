@@ -22,6 +22,8 @@ const AddMonthDialog = ({ open, onOpenChange, onAdd, existingMonths }: AddMonthD
   const [amounts, setAmounts] = useState<Record<string, string>>(() =>
     Object.fromEntries(members.map((m) => [m.name, String(m.monthlyDue)]))
   );
+  const [withdrawal, setWithdrawal] = useState("0");
+  const [repayment, setRepayment] = useState("0");
   const [error, setError] = useState("");
 
   const handleAdd = () => {
@@ -39,9 +41,17 @@ const AddMonthDialog = ({ open, onOpenChange, onAdd, existingMonths }: AddMonthD
       }
       contributions[m.name] = Math.round(val);
     }
-    onAdd({ month: label, contributions });
+    const w = Number(withdrawal);
+    const r = Number(repayment);
+    if (isNaN(w) || w < 0 || isNaN(r) || r < 0) {
+      setError("Invalid withdrawal or repayment");
+      return;
+    }
+    onAdd({ month: label, contributions, withdrawal: Math.round(w), repayment: Math.round(r) });
     // Reset
     setAmounts(Object.fromEntries(members.map((m) => [m.name, String(m.monthlyDue)])));
+    setWithdrawal("0");
+    setRepayment("0");
     setError("");
     onOpenChange(false);
   };
