@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { members, MonthlyRecord } from "@/lib/data";
+import { members, MonthlyRecord, calcMonthNet } from "@/lib/data";
 import {
   Table, TableHeader, TableBody, TableHead, TableRow, TableCell,
 } from "@/components/ui/table";
@@ -16,12 +16,16 @@ interface ContributionTableProps {
 const ContributionTable = ({ records, onUpdate, onDelete }: ContributionTableProps) => {
   const [editingRow, setEditingRow] = useState<number | null>(null);
   const [editValues, setEditValues] = useState<Record<string, string>>({});
+  const [editWithdrawal, setEditWithdrawal] = useState("0");
+  const [editRepayment, setEditRepayment] = useState("0");
 
   const startEdit = (index: number) => {
     const record = records[index];
     setEditValues(
       Object.fromEntries(members.map((m) => [m.name, String(record.contributions[m.name] || 0)]))
     );
+    setEditWithdrawal(String(record.withdrawal || 0));
+    setEditRepayment(String(record.repayment || 0));
     setEditingRow(index);
   };
 
@@ -32,7 +36,10 @@ const ContributionTable = ({ records, onUpdate, onDelete }: ContributionTablePro
       if (isNaN(val) || val < 0 || val > 100000) return;
       contributions[m.name] = Math.round(val);
     }
-    onUpdate(index, { ...records[index], contributions });
+    const w = Number(editWithdrawal);
+    const r = Number(editRepayment);
+    if (isNaN(w) || w < 0 || isNaN(r) || r < 0) return;
+    onUpdate(index, { ...records[index], contributions, withdrawal: Math.round(w), repayment: Math.round(r) });
     setEditingRow(null);
   };
 
@@ -45,14 +52,16 @@ const ContributionTable = ({ records, onUpdate, onDelete }: ContributionTablePro
             {members.map((m) => (
               <TableHead key={m.name} className="text-center">{m.shortName}</TableHead>
             ))}
-            <TableHead className="text-center font-bold">Total</TableHead>
+            <TableHead className="text-center">Withdrawal</TableHead>
+            <TableHead className="text-center">Repayment</TableHead>
+            <TableHead className="text-center font-bold">Net</TableHead>
             <TableHead className="text-center w-20">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {records.map((record, i) => {
             const isEditing = editingRow === i;
-            const monthTotal = Object.values(record.contributions).reduce((s, v) => s + v, 0);
+            const monthNet = calcMonthNet(record);
 
             return (
               <TableRow key={record.month}>
@@ -87,7 +96,38 @@ const ContributionTable = ({ records, onUpdate, onDelete }: ContributionTablePro
                     </TableCell>
                   );
                 })}
-                <TableCell className="text-center font-bold">${monthTotal.toLocaleString()}</TableCell>
+                {isEditing ? (
+                  <>
+                    <TableCell className="text-center p-1">
+                      <Input
+                        type="number"
+                        min={0}
+                        className="w-24 text-center mx-auto h-8 text-sm"
+                        value={editWithdrawal}
+                        onChange={(e) => setEditWithdrawal(e.target.value)}
+                      />
+                    </TableCell>
+                    <TableCell className="text-center p-1">
+                      <Input
+                        type="number"
+                        min={0}
+                        className="w-24 text-center mx-auto h-8 text-sm"
+                        value={editRepayment}
+                        onChange={(e) => setEditRepayment(e.target.value)}
+                      />
+                    </TableCell>
+                  </>
+                ) : (
+                  <>
+                    <TableCell className="text-center text-destructive">
+                      {record.withdrawal ? `-$${record.withdrawal.toLocaleString()}` : "—"}
+                    </TableCell>
+                    <TableCell className="text-center text-green-600">
+                      {record.repayment ? `+$${record.repayment.toLocaleString()}` : "—"}
+                    </TableCell>
+                  </>
+                )}
+                <TableCell className="text-center font-bold">${monthNet.toLocaleString()}</TableCell>
                 <TableCell className="text-center">
                   {isEditing ? (
                     <div className="flex gap-1 justify-center">

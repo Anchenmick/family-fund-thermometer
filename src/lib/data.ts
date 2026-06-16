@@ -8,6 +8,8 @@ export interface FamilyMember {
 export interface MonthlyRecord {
   month: string;
   contributions: Record<string, number>;
+  withdrawal?: number;
+  repayment?: number;
 }
 
 export const TARGET = 40000;
@@ -64,8 +66,16 @@ export function saveRecords(records: MonthlyRecord[]) {
   localStorage.setItem(DATA_VERSION_KEY, CURRENT_VERSION);
 }
 
+export function calcMonthContribTotal(r: MonthlyRecord): number {
+  return Object.values(r.contributions).reduce((s, v) => s + v, 0);
+}
+
+export function calcMonthNet(r: MonthlyRecord): number {
+  return calcMonthContribTotal(r) - (r.withdrawal || 0) + (r.repayment || 0);
+}
+
 export function calcTotalBalance(records: MonthlyRecord[]): number {
-  return records.reduce((sum, r) => sum + Object.values(r.contributions).reduce((s, v) => s + v, 0), 0);
+  return records.reduce((sum, r) => sum + calcMonthNet(r), 0);
 }
 
 export function calcMemberTotal(records: MonthlyRecord[], name: string): number {
@@ -75,7 +85,7 @@ export function calcMemberTotal(records: MonthlyRecord[], name: string): number 
 export function calcMonthlyTotals(records: MonthlyRecord[]) {
   let cumulative = 0;
   return records.map((r) => {
-    const total = Object.values(r.contributions).reduce((s, v) => s + v, 0);
+    const total = calcMonthNet(r);
     cumulative += total;
     return { month: r.month, total, cumulative };
   });
