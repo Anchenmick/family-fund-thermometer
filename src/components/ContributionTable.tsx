@@ -96,7 +96,38 @@ const ContributionTable = ({ records, onUpdate, onDelete }: ContributionTablePro
                     </TableCell>
                   );
                 })}
-                <TableCell className="text-center font-bold">${monthTotal.toLocaleString()}</TableCell>
+                {isEditing ? (
+                  <>
+                    <TableCell className="text-center p-1">
+                      <Input
+                        type="number"
+                        min={0}
+                        className="w-24 text-center mx-auto h-8 text-sm"
+                        value={editWithdrawal}
+                        onChange={(e) => setEditWithdrawal(e.target.value)}
+                      />
+                    </TableCell>
+                    <TableCell className="text-center p-1">
+                      <Input
+                        type="number"
+                        min={0}
+                        className="w-24 text-center mx-auto h-8 text-sm"
+                        value={editRepayment}
+                        onChange={(e) => setEditRepayment(e.target.value)}
+                      />
+                    </TableCell>
+                  </>
+                ) : (
+                  <>
+                    <TableCell className="text-center text-destructive">
+                      {record.withdrawal ? `-$${record.withdrawal.toLocaleString()}` : "—"}
+                    </TableCell>
+                    <TableCell className="text-center text-green-600">
+                      {record.repayment ? `+$${record.repayment.toLocaleString()}` : "—"}
+                    </TableCell>
+                  </>
+                )}
+                <TableCell className="text-center font-bold">${monthNet.toLocaleString()}</TableCell>
                 <TableCell className="text-center">
                   {isEditing ? (
                     <div className="flex gap-1 justify-center">
