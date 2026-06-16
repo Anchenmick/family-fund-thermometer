@@ -22,6 +22,8 @@ const AddMonthDialog = ({ open, onOpenChange, onAdd, existingMonths }: AddMonthD
   const [amounts, setAmounts] = useState<Record<string, string>>(() =>
     Object.fromEntries(members.map((m) => [m.name, String(m.monthlyDue)]))
   );
+  const [withdrawal, setWithdrawal] = useState("0");
+  const [repayment, setRepayment] = useState("0");
   const [error, setError] = useState("");
 
   const handleAdd = () => {
@@ -39,9 +41,17 @@ const AddMonthDialog = ({ open, onOpenChange, onAdd, existingMonths }: AddMonthD
       }
       contributions[m.name] = Math.round(val);
     }
-    onAdd({ month: label, contributions });
+    const w = Number(withdrawal);
+    const r = Number(repayment);
+    if (isNaN(w) || w < 0 || isNaN(r) || r < 0) {
+      setError("Invalid withdrawal or repayment");
+      return;
+    }
+    onAdd({ month: label, contributions, withdrawal: Math.round(w), repayment: Math.round(r) });
     // Reset
     setAmounts(Object.fromEntries(members.map((m) => [m.name, String(m.monthlyDue)])));
+    setWithdrawal("0");
+    setRepayment("0");
     setError("");
     onOpenChange(false);
   };
@@ -91,6 +101,35 @@ const AddMonthDialog = ({ open, onOpenChange, onAdd, existingMonths }: AddMonthD
                 </div>
               </div>
             ))}
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 pt-2 border-t">
+            <div>
+              <Label className="text-sm">Withdrawal (debt)</Label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
+                <Input
+                  type="number"
+                  min={0}
+                  className="pl-7"
+                  value={withdrawal}
+                  onChange={(e) => setWithdrawal(e.target.value)}
+                />
+              </div>
+            </div>
+            <div>
+              <Label className="text-sm">Debt repayment</Label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
+                <Input
+                  type="number"
+                  min={0}
+                  className="pl-7"
+                  value={repayment}
+                  onChange={(e) => setRepayment(e.target.value)}
+                />
+              </div>
+            </div>
           </div>
 
           {error && <p className="text-sm text-destructive">{error}</p>}
