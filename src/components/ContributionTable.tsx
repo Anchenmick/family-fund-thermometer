@@ -16,12 +16,16 @@ interface ContributionTableProps {
 const ContributionTable = ({ records, onUpdate, onDelete }: ContributionTableProps) => {
   const [editingRow, setEditingRow] = useState<number | null>(null);
   const [editValues, setEditValues] = useState<Record<string, string>>({});
+  const [editWithdrawal, setEditWithdrawal] = useState("0");
+  const [editRepayment, setEditRepayment] = useState("0");
 
   const startEdit = (index: number) => {
     const record = records[index];
     setEditValues(
       Object.fromEntries(members.map((m) => [m.name, String(record.contributions[m.name] || 0)]))
     );
+    setEditWithdrawal(String(record.withdrawal || 0));
+    setEditRepayment(String(record.repayment || 0));
     setEditingRow(index);
   };
 
@@ -32,7 +36,10 @@ const ContributionTable = ({ records, onUpdate, onDelete }: ContributionTablePro
       if (isNaN(val) || val < 0 || val > 100000) return;
       contributions[m.name] = Math.round(val);
     }
-    onUpdate(index, { ...records[index], contributions });
+    const w = Number(editWithdrawal);
+    const r = Number(editRepayment);
+    if (isNaN(w) || w < 0 || isNaN(r) || r < 0) return;
+    onUpdate(index, { ...records[index], contributions, withdrawal: Math.round(w), repayment: Math.round(r) });
     setEditingRow(null);
   };
 
@@ -45,14 +52,16 @@ const ContributionTable = ({ records, onUpdate, onDelete }: ContributionTablePro
             {members.map((m) => (
               <TableHead key={m.name} className="text-center">{m.shortName}</TableHead>
             ))}
-            <TableHead className="text-center font-bold">Total</TableHead>
+            <TableHead className="text-center">Withdrawal</TableHead>
+            <TableHead className="text-center">Repayment</TableHead>
+            <TableHead className="text-center font-bold">Net</TableHead>
             <TableHead className="text-center w-20">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {records.map((record, i) => {
             const isEditing = editingRow === i;
-            const monthTotal = Object.values(record.contributions).reduce((s, v) => s + v, 0);
+            const monthNet = calcMonthNet(record);
 
             return (
               <TableRow key={record.month}>
