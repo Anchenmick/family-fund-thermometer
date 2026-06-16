@@ -26,7 +26,7 @@ export const members: FamilyMember[] = [
 
 const STORAGE_KEY = "family-savings-records";
 const DATA_VERSION_KEY = "family-savings-version";
-const CURRENT_VERSION = "3";
+const CURRENT_VERSION = "4";
 
 const defaultRecords: MonthlyRecord[] = [
   {
@@ -39,19 +39,19 @@ const defaultRecords: MonthlyRecord[] = [
   },
   {
     month: "Mar 2025",
-    contributions: { Atem: 1000, Anyang: 500, Anchen: 500, Mummy: 0, Daddy: 0, Randalls: 0, Fran: 0 },
+    contributions: { Atem: 1000, Anyang: 500, Anchen: 500, Mummy: 500, Daddy: 500, Randalls: 500, Fran: 500 },
   },
   {
     month: "Apr 2025",
-    contributions: { Atem: 0, Anyang: 0, Anchen: 0, Mummy: 0, Daddy: 0, Randalls: 0, Fran: 0 },
+    contributions: { Atem: 1000, Anyang: 500, Anchen: 500, Mummy: 500, Daddy: 500, Randalls: 500, Fran: 500 },
   },
   {
     month: "May 2025",
-    contributions: { Atem: 0, Anyang: 0, Anchen: 0, Mummy: 0, Daddy: 0, Randalls: 0, Fran: 0 },
+    contributions: { Atem: 1000, Anyang: 500, Anchen: 500, Mummy: 500, Daddy: 500, Randalls: 500, Fran: 500 },
   },
   {
     month: "Jun 2025",
-    contributions: { Atem: 0, Anyang: 0, Anchen: 0, Mummy: 0, Daddy: 0, Randalls: 0, Fran: 0 },
+    contributions: { Atem: 1000, Anyang: 500, Anchen: 500, Mummy: 500, Daddy: 500, Randalls: 500, Fran: 500 },
   },
 ];
 
