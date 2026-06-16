@@ -103,6 +103,35 @@ const AddMonthDialog = ({ open, onOpenChange, onAdd, existingMonths }: AddMonthD
             ))}
           </div>
 
+          <div className="grid grid-cols-2 gap-3 pt-2 border-t">
+            <div>
+              <Label className="text-sm">Withdrawal (debt)</Label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
+                <Input
+                  type="number"
+                  min={0}
+                  className="pl-7"
+                  value={withdrawal}
+                  onChange={(e) => setWithdrawal(e.target.value)}
+                />
+              </div>
+            </div>
+            <div>
+              <Label className="text-sm">Debt repayment</Label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
+                <Input
+                  type="number"
+                  min={0}
+                  className="pl-7"
+                  value={repayment}
+                  onChange={(e) => setRepayment(e.target.value)}
+                />
+              </div>
+            </div>
+          </div>
+
           {error && <p className="text-sm text-destructive">{error}</p>}
         </div>
         <DialogFooter>
