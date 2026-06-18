@@ -26,32 +26,35 @@ export const members: FamilyMember[] = [
 
 const STORAGE_KEY = "family-savings-records";
 const DATA_VERSION_KEY = "family-savings-version";
-const CURRENT_VERSION = "4";
+const CURRENT_VERSION = "5";
 
 const defaultRecords: MonthlyRecord[] = [
   {
-    month: "Jan 2025",
+    month: "Jan 2026",
     contributions: { Atem: 1000, Anyang: 500, Anchen: 500, Mummy: 500, Daddy: 500, Randalls: 0, Fran: 500 },
   },
   {
-    month: "Feb 2025",
+    month: "Feb 2026",
     contributions: { Atem: 1000, Anyang: 500, Anchen: 500, Mummy: 500, Daddy: 0, Randalls: 500, Fran: 0 },
   },
   {
-    month: "Mar 2025",
-    contributions: { Atem: 1000, Anyang: 500, Anchen: 500, Mummy: 500, Daddy: 500, Randalls: 500, Fran: 500 },
+    month: "Mar 2026",
+    contributions: { Atem: 1000, Anyang: 500, Anchen: 1000, Mummy: 500, Daddy: 500, Randalls: 0, Fran: 0 },
   },
   {
-    month: "Apr 2025",
-    contributions: { Atem: 1000, Anyang: 500, Anchen: 500, Mummy: 500, Daddy: 500, Randalls: 500, Fran: 500 },
+    month: "Apr 2026",
+    contributions: { Atem: 1000, Anyang: 0, Anchen: 500, Mummy: 0, Daddy: 200, Randalls: 0, Fran: 0 },
+    withdrawal: 9500,
   },
   {
-    month: "May 2025",
-    contributions: { Atem: 1000, Anyang: 500, Anchen: 500, Mummy: 500, Daddy: 500, Randalls: 500, Fran: 500 },
+    month: "May 2026",
+    contributions: { Atem: 1000, Anyang: 0, Anchen: 500, Mummy: 0, Daddy: 0, Randalls: 0, Fran: 0 },
+    repayment: 850,
   },
   {
-    month: "Jun 2025",
-    contributions: { Atem: 1000, Anyang: 500, Anchen: 500, Mummy: 500, Daddy: 500, Randalls: 500, Fran: 500 },
+    month: "Jun 2026",
+    contributions: { Atem: 1000, Anyang: 0, Anchen: 500, Mummy: 0, Daddy: 0, Randalls: 0, Fran: 0 },
+    repayment: 1150,
   },
 ];
 
