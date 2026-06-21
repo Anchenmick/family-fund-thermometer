@@ -5,15 +5,15 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Pencil, Check, X, Trash2 } from "lucide-react";
+import { Pencil, Check, X } from "lucide-react";
 
 interface ContributionTableProps {
   records: MonthlyRecord[];
-  onUpdate: (index: number, record: MonthlyRecord) => void;
-  onDelete: (index: number) => void;
+  onUpdate?: (index: number, record: MonthlyRecord) => void;
+  editable?: boolean;
 }
 
-const ContributionTable = ({ records, onUpdate, onDelete }: ContributionTableProps) => {
+const ContributionTable = ({ records, onUpdate, editable = false }: ContributionTableProps) => {
   const [editingRow, setEditingRow] = useState<number | null>(null);
   const [editValues, setEditValues] = useState<Record<string, string>>({});
   const [editWithdrawal, setEditWithdrawal] = useState("0");
@@ -39,7 +39,7 @@ const ContributionTable = ({ records, onUpdate, onDelete }: ContributionTablePro
     const w = Number(editWithdrawal);
     const r = Number(editRepayment);
     if (isNaN(w) || w < 0 || isNaN(r) || r < 0) return;
-    onUpdate(index, { ...records[index], contributions, withdrawal: Math.round(w), repayment: Math.round(r) });
+    onUpdate?.(index, { ...records[index], contributions, withdrawal: Math.round(w), repayment: Math.round(r) });
     setEditingRow(null);
   };
 
@@ -55,12 +55,12 @@ const ContributionTable = ({ records, onUpdate, onDelete }: ContributionTablePro
             <TableHead className="text-center">Withdrawal</TableHead>
             <TableHead className="text-center">Repayment</TableHead>
             <TableHead className="text-center font-bold">Net</TableHead>
-            <TableHead className="text-center w-20">Actions</TableHead>
+            {editable && <TableHead className="text-center w-20">Actions</TableHead>}
           </TableRow>
         </TableHeader>
         <TableBody>
           {records.map((record, i) => {
-            const isEditing = editingRow === i;
+            const isEditing = editable && editingRow === i;
             const monthNet = calcMonthNet(record);
 
             return (
@@ -128,27 +128,24 @@ const ContributionTable = ({ records, onUpdate, onDelete }: ContributionTablePro
                   </>
                 )}
                 <TableCell className="text-center font-bold">${monthNet.toLocaleString()}</TableCell>
-                <TableCell className="text-center">
-                  {isEditing ? (
-                    <div className="flex gap-1 justify-center">
-                      <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => saveEdit(i)}>
-                        <Check className="h-4 w-4 text-green-600" />
-                      </Button>
-                      <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setEditingRow(null)}>
-                        <X className="h-4 w-4 text-destructive" />
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="flex gap-1 justify-center">
+                {editable && (
+                  <TableCell className="text-center">
+                    {isEditing ? (
+                      <div className="flex gap-1 justify-center">
+                        <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => saveEdit(i)}>
+                          <Check className="h-4 w-4 text-green-600" />
+                        </Button>
+                        <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setEditingRow(null)}>
+                          <X className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
+                    ) : (
                       <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => startEdit(i)}>
                         <Pencil className="h-3.5 w-3.5" />
                       </Button>
-                      <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => onDelete(i)}>
-                        <Trash2 className="h-3.5 w-3.5 text-destructive" />
-                      </Button>
-                    </div>
-                  )}
-                </TableCell>
+                    )}
+                  </TableCell>
+                )}
               </TableRow>
             );
           })}
