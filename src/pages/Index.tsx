@@ -1,36 +1,15 @@
-import { useState } from "react";
-import { members, loadRecords, saveRecords, calcTotalBalance, calcMonthlyTotals, TARGET, MonthlyRecord } from "@/lib/data";
+import { members, loadRecords, calcTotalBalance, calcMonthlyTotals, TARGET, MonthlyRecord } from "@/lib/data";
 import Thermometer from "@/components/Thermometer";
 import MemberCard from "@/components/MemberCard";
 import ContributionTable from "@/components/ContributionTable";
-import AddMonthDialog from "@/components/AddMonthDialog";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Settings } from "lucide-react";
 
 const Index = () => {
-  const [records, setRecords] = useState<MonthlyRecord[]>(loadRecords);
-  const [addOpen, setAddOpen] = useState(false);
+  const [records] = useState<MonthlyRecord[]>(loadRecords);
 
-  const persist = (updated: MonthlyRecord[]) => {
-    setRecords(updated);
-    saveRecords(updated);
-  };
-
-  const handleAdd = (record: MonthlyRecord) => {
-    persist([...records, record]);
-  };
-
-  const handleUpdate = (index: number, record: MonthlyRecord) => {
-    const updated = [...records];
-    updated[index] = record;
-    persist(updated);
-  };
-
-  const handleDelete = (index: number) => {
-    persist(records.filter((_, i) => i !== index));
-  };
-
-  const USD_TO_EUR = 0.86078; // Source: Xe.com mid-market rate
+  const USD_TO_EUR = 0.86078;
   const balance = calcTotalBalance(records);
   const balanceEur = Math.round(balance * USD_TO_EUR);
   const monthlyTotals = calcMonthlyTotals(records);
@@ -41,11 +20,19 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b bg-card/80 backdrop-blur-sm sticky top-0 z-20">
-        <div className="container max-w-5xl mx-auto px-4 py-4">
-          <h1 className="text-2xl font-extrabold text-foreground tracking-tight">🏠 Family Savings Tracker</h1>
-          <p className="text-sm text-muted-foreground">
-            Together to <span className="font-bold text-accent">${TARGET.toLocaleString()}</span>
-          </p>
+        <div className="container max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-extrabold text-foreground tracking-tight">🏠 Family Savings Tracker</h1>
+            <p className="text-sm text-muted-foreground">
+              Together to <span className="font-bold text-accent">${TARGET.toLocaleString()}</span>
+            </p>
+          </div>
+          <Link
+            to="/admin"
+            className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1"
+          >
+            <Settings className="h-4 w-4" /> Admin
+          </Link>
         </div>
       </header>
 
@@ -87,22 +74,10 @@ const Index = () => {
         </section>
 
         <section>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-bold text-foreground">Monthly Breakdown</h2>
-            <Button onClick={() => setAddOpen(true)} size="sm">
-              <Plus className="h-4 w-4 mr-1" /> Add Month
-            </Button>
-          </div>
-          <ContributionTable records={records} onUpdate={handleUpdate} onDelete={handleDelete} />
+          <h2 className="text-lg font-bold text-foreground mb-4">Monthly Breakdown</h2>
+          <ContributionTable records={records} />
         </section>
       </main>
-
-      <AddMonthDialog
-        open={addOpen}
-        onOpenChange={setAddOpen}
-        onAdd={handleAdd}
-        existingMonths={records.map((r) => r.month)}
-      />
     </div>
   );
 };
