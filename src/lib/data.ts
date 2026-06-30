@@ -26,7 +26,7 @@ export const members: FamilyMember[] = [
 
 const STORAGE_KEY = "family-savings-records";
 const DATA_VERSION_KEY = "family-savings-version";
-const CURRENT_VERSION = "8";
+const CURRENT_VERSION = "9";
 
 const defaultRecords: MonthlyRecord[] = [
   {
@@ -55,6 +55,10 @@ const defaultRecords: MonthlyRecord[] = [
     month: "Jun 2026",
     contributions: { Atem: 1000, Anyang: 0, Anchen: 500, Mummy: 0, Daddy: 0, Randalls: 0, Fran: 0 },
     repayment: 2650,
+  },
+  {
+    month: "Jul 2026",
+    contributions: { Atem: 1000, Anyang: 0, Anchen: 500, Mummy: 0, Daddy: 0, Randalls: 0, Fran: 0 },
   },
 ];
 
