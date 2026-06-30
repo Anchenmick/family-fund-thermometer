@@ -43,7 +43,7 @@ const defaultRecords: MonthlyRecord[] = [
   },
   {
     month: "Apr 2026",
-    contributions: { Atem: 1000, Anyang: 0, Anchen: 500, Mummy: 0, Daddy: 200, Randalls: 0, Fran: 0 },
+    contributions: { Atem: 1000, Anyang: 57, Anchen: 500, Mummy: 0, Daddy: 200, Randalls: 0, Fran: 0 },
     withdrawal: 9500,
   },
   {
