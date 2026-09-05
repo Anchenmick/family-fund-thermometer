@@ -1,15 +1,16 @@
-import { FamilyMember, calcMemberTotal, TARGET, members, MonthlyRecord } from "@/lib/data";
+import { FamilyMember, calcMemberTotal, members, MonthlyRecord } from "@/lib/data";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 interface MemberCardProps {
   member: FamilyMember;
   records: MonthlyRecord[];
+  target: number;
 }
 
-const MemberCard = ({ member, records }: MemberCardProps) => {
+const MemberCard = ({ member, records, target }: MemberCardProps) => {
   const total = calcMemberTotal(records, member.name);
-  const fairShare = TARGET / members.length;
+  const fairShare = target / members.length;
   const progressPct = Math.min((total / fairShare) * 100, 100);
 
   return (
