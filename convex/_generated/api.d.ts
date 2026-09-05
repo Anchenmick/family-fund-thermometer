@@ -8,7 +8,10 @@
  * @module
  */
 
+import type * as ledger from "../ledger.js";
 import type * as lib_auth from "../lib/auth.js";
+import type * as seed from "../seed.js";
+import type * as seedData from "../seedData.js";
 import type * as settings from "../settings.js";
 
 import type {
@@ -18,7 +21,10 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  ledger: typeof ledger;
   "lib/auth": typeof lib_auth;
+  seed: typeof seed;
+  seedData: typeof seedData;
   settings: typeof settings;
 }>;
 
