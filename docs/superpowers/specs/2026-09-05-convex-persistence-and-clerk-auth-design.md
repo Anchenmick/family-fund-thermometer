@@ -168,11 +168,19 @@ validates no tokens, which is harmless because nothing requires them.
 publishable key is present, `ClerkProvider` and `ConvexProviderWithClerk` are
 used instead.
 
-**Components that do not change at all:** `Thermometer`, `MemberCard`,
-`ContributionTable`. This is achieved by keeping every calculation function in
-`data.ts` pure and operating on `MonthlyRecord[]`, with a thin adapter mapping
-Convex documents to that shape. The pure functions stay trivially testable and
-the UI stays untouched.
+**`ContributionTable` does not change at all.** This is achieved by keeping
+every calculation function in `data.ts` pure and operating on
+`MonthlyRecord[]`, with a thin adapter mapping Convex documents to that shape.
+The pure functions stay trivially testable.
+
+**`Thermometer` and `MemberCard` each gain a `target` prop.** Both currently
+import the `TARGET` constant directly, so moving the goal into `settings`
+forces the value to arrive from above instead. `Thermometer` additionally
+hardcodes its tick scale as `[0, 5000, ..., 40000]`, which silently assumes a
+40,000 goal; that scale becomes derived from `target` in eight even divisions.
+Without this, a changed `targetAmount` would move the mercury while the printed
+scale beside it kept saying 40,000, which is worse than not making the goal
+configurable at all.
 
 **Pages that change:**
 
