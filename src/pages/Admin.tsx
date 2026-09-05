@@ -11,6 +11,7 @@ import {
   calcTotalBalance,
   MonthlyRecord,
 } from "@/lib/data";
+import { extractErrorMessage } from "@/lib/convexErrors";
 import ContributionTable from "@/components/ContributionTable";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -61,7 +62,7 @@ const Admin = () => {
     } catch (error) {
       toast({
         title: "Could not update",
-        description: error instanceof Error ? error.message : "Unknown error",
+        description: extractErrorMessage(error),
         variant: "destructive",
       });
     }
@@ -101,7 +102,7 @@ const Admin = () => {
     } catch (error) {
       toast({
         title: "Could not add month",
-        description: error instanceof Error ? error.message : "Unknown error",
+        description: extractErrorMessage(error),
         variant: "destructive",
       });
     }
