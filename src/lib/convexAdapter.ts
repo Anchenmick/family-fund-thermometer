@@ -17,6 +17,7 @@ export interface LedgerDoc {
  */
 export function docToRecord(doc: LedgerDoc): MonthlyRecord {
   return {
+    id: doc._id,
     month: formatPeriod(doc.year, doc.monthIndex),
     contributions: doc.contributions,
     withdrawal: doc.withdrawal,
