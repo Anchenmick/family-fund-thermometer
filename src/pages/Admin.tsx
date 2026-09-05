@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowLeft, Plus } from "lucide-react";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
+import { Id } from "../../convex/_generated/dataModel";
 import { docToRecord } from "@/lib/convexAdapter";
 import { MONTH_ABBREVIATIONS } from "@/lib/period";
 import {
@@ -13,6 +14,7 @@ import {
 } from "@/lib/data";
 import { extractErrorMessage } from "@/lib/convexErrors";
 import ContributionTable from "@/components/ContributionTable";
+import AuthControls from "@/components/AuthControls";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -50,10 +52,10 @@ const Admin = () => {
 
   const records = ledger.map(docToRecord);
 
-  const handleUpdate = async (index: number, record: MonthlyRecord) => {
+  const handleUpdate = async (id: string, record: MonthlyRecord) => {
     try {
       await updateMonth({
-        id: ledger[index]._id,
+        id: id as Id<"ledger">,
         contributions: record.contributions,
         withdrawal: record.withdrawal || 0,
         repayment: record.repayment || 0,
@@ -120,12 +122,15 @@ const Admin = () => {
               Running balance: <span className="font-bold text-foreground">${balance.toLocaleString()}</span>
             </p>
           </div>
-          <Link
-            to="/"
-            className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1"
-          >
-            <ArrowLeft className="h-4 w-4" /> Back to app
-          </Link>
+          <div className="flex items-center gap-4">
+            <AuthControls />
+            <Link
+              to="/"
+              className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1"
+            >
+              <ArrowLeft className="h-4 w-4" /> Back to app
+            </Link>
+          </div>
         </div>
       </header>
 

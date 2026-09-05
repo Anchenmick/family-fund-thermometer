@@ -2,6 +2,7 @@ import { members, calcTotalBalance, calcMonthlyTotals } from "@/lib/data";
 import Thermometer from "@/components/Thermometer";
 import MemberCard from "@/components/MemberCard";
 import ContributionTable from "@/components/ContributionTable";
+import AuthControls from "@/components/AuthControls";
 import { Link } from "react-router-dom";
 import { Settings } from "lucide-react";
 import { useQuery } from "convex/react";
@@ -41,12 +42,15 @@ const Index = () => {
               Together to <span className="font-bold text-accent">${target.toLocaleString()}</span>
             </p>
           </div>
-          <Link
-            to="/admin"
-            className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1"
-          >
-            <Settings className="h-4 w-4" /> Admin
-          </Link>
+          <div className="flex items-center gap-4">
+            <AuthControls />
+            <Link
+              to="/admin"
+              className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1"
+            >
+              <Settings className="h-4 w-4" /> Admin
+            </Link>
+          </div>
         </div>
       </header>
 
