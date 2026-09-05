@@ -39,6 +39,29 @@ describe("seed.run", () => {
     expect(await t.query(api.ledger.list, {})).toHaveLength(7);
   });
 
+  test("creates the settings row even when the ledger was already populated another way", async () => {
+    const t = convexTest(schema, modules);
+
+    await t.run(async (ctx) =>
+      ctx.db.insert("ledger", {
+        year: 2026,
+        monthIndex: 0,
+        contributions: {},
+        withdrawal: 0,
+        repayment: 0,
+      })
+    );
+
+    const result = await t.mutation(internal.seed.run, {});
+
+    expect(result.seeded).toBe(false);
+    expect(result.months).toBe(0);
+
+    const settings = await t.query(api.settings.get, {});
+    expect(settings.requireAuthForAdmin).toBe(false);
+    expect(settings.requireAuthForViewer).toBe(false);
+  });
+
   test("reproduces the balance the app shows today", async () => {
     const t = convexTest(schema, modules);
     await t.mutation(internal.seed.run, {});

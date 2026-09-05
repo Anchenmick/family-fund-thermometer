@@ -9,6 +9,11 @@ import { SEED_MONTHS } from "./seedData";
 export const run = internalMutation({
   args: {},
   handler: async (ctx) => {
+    const settings = await ctx.db.query("settings").first();
+    if (!settings) {
+      await ctx.db.insert("settings", DEFAULT_SETTINGS);
+    }
+
     const existing = await ctx.db.query("ledger").first();
     if (existing) {
       return { seeded: false, months: 0 };
@@ -16,11 +21,6 @@ export const run = internalMutation({
 
     for (const month of SEED_MONTHS) {
       await ctx.db.insert("ledger", month);
-    }
-
-    const settings = await ctx.db.query("settings").first();
-    if (!settings) {
-      await ctx.db.insert("settings", DEFAULT_SETTINGS);
     }
 
     return { seeded: true, months: SEED_MONTHS.length };
