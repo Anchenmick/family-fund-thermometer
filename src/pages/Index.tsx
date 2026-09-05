@@ -38,7 +38,7 @@ const Index = () => {
 
       <main className="container max-w-5xl mx-auto px-4 py-8 space-y-10">
         <div className="grid md:grid-cols-2 gap-8 items-center">
-          <Thermometer current={balance} />
+          <Thermometer current={balance} target={TARGET} />
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div className="rounded-lg bg-card border p-4 text-center">
@@ -68,7 +68,7 @@ const Index = () => {
           <h2 className="text-lg font-bold text-foreground mb-4">Members</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {members.map((m) => (
-              <MemberCard key={m.name} member={m} records={records} />
+              <MemberCard key={m.name} member={m} records={records} target={TARGET} />
             ))}
           </div>
         </section>

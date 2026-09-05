@@ -1,12 +1,13 @@
-import { TARGET } from "@/lib/data";
-
 interface ThermometerProps {
   current: number;
+  target: number;
 }
 
-const Thermometer = ({ current }: ThermometerProps) => {
-  const percentage = Math.min((current / TARGET) * 100, 100);
-  const steps = [0, 5000, 10000, 15000, 20000, 25000, 30000, 35000, 40000];
+const Thermometer = ({ current, target }: ThermometerProps) => {
+  const percentage = Math.min((current / target) * 100, 100);
+  // Nine labels, eight even divisions, so the printed scale always matches
+  // the goal rather than assuming 40,000.
+  const steps = Array.from({ length: 9 }, (_, i) => Math.round((target / 8) * i));
 
   return (
     <div className="flex flex-col items-center gap-2">
@@ -56,7 +57,7 @@ const Thermometer = ({ current }: ThermometerProps) => {
           ${current.toLocaleString()}
         </div>
         <div className="text-sm text-muted-foreground">
-          ${(TARGET - current).toLocaleString()} to go
+          ${(target - current).toLocaleString()} to go
         </div>
       </div>
     </div>
