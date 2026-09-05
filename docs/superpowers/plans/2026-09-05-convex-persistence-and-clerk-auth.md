@@ -1764,7 +1764,28 @@ The duplicate check and the amount validation now live on the server, so the cli
                   {MONTH_ABBREVIATIONS.map((m) => <SelectItem key={m} value={m}>{m}</SelectItem>)}
 ```
 
-- [ ] **Step 5: Verify writes actually persist**
+- [ ] **Step 5: Fix two prose em-dashes already in this file**
+
+Both pre-date this branch and violate the global no-em-dash rule. This task
+is already rewriting the file, so they are corrected here.
+
+Line 111, replace the em-dash with a comma:
+
+```tsx
+              Append-only ledger. Enter what happened this period, contributions, any withdrawal (loan out), any
+```
+
+Line 170, replace the em-dash with a period and a new sentence:
+
+```tsx
+            Use the pencil icon only to correct a mistake. Do not overwrite real history.
+```
+
+Leave the `"—"` placeholder glyphs in `ContributionTable.tsx` and
+`Index.tsx` alone. Those are an "empty value" symbol in table cells, not
+prose, and changing them would alter the UI's visual language.
+
+- [ ] **Step 6: Verify writes actually persist**
 
 Run: `npx tsc --noEmit`
 Expected: no errors.
@@ -1783,7 +1804,7 @@ Then remove the test month so the ledger holds only real data:
 
 Run: `npx convex data ledger` to find the test row's id, and delete it in the Convex dashboard.
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 7: Commit**
 
 ```bash
 git add src/pages/Admin.tsx
@@ -1811,8 +1832,13 @@ The old persistence is now dead code, and it is dangerous dead code: `CURRENT_VE
 
 - [ ] **Step 1: Confirm nothing still uses the old exports**
 
-Run: `grep -rn "loadRecords\|saveRecords\|defaultRecords\|CURRENT_VERSION\|STORAGE_KEY\|DATA_VERSION_KEY\|TARGET" src/`
+Run: `grep -rn "loadRecords\|saveRecords\|defaultRecords\|CURRENT_VERSION\|STORAGE_KEY\|DATA_VERSION_KEY\|TARGET" src/ --exclude=data.ts`
+
 Expected: no matches. If anything appears, that file was missed in an earlier task and must be migrated first.
+
+`src/lib/data.ts` is excluded because it still defines these exports at this
+point. The question this step answers is whether anything still *consumes*
+them. Step 4 greps again without the exclusion, after the deletion.
 
 - [ ] **Step 2: Delete the dead code**
 
@@ -1961,9 +1987,15 @@ npm run lint              # no new errors
 Check the em-dash prohibition:
 
 ```bash
-grep -rn $'—' . --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=dist
+grep -rn $'—' . --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=dist \
+  | grep -v 'ContributionTable.tsx' | grep -v 'Index.tsx:5'
 ```
 Expected: no matches.
+
+The two exclusions are the pre-existing `"—"` placeholder glyphs in table
+cells, left in place deliberately (they are an empty-value symbol, not
+prose). Every prose em-dash, including the two corrected in Task 10, must be
+gone.
 
 Confirm no secret is staged:
 
