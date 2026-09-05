@@ -3,9 +3,36 @@
 Ledger data lives in Convex. There is no local fallback: the app requires
 `VITE_CONVEX_URL` to be set.
 
+## Which database the app talks to
+
+There are two Convex deployments:
+
+| Deployment | Used by | Holds |
+|---|---|---|
+| `shocking-bat-349` (production) | the live site on Lovable | the family's real ledger |
+| `pastel-pheasant-942` (development) | local `npm run dev` | a copy for experimenting |
+
+The production URL is a **default in the code**, in `src/providers/AppProviders.tsx`.
+It is not a secret: the browser connects to that endpoint directly, so the URL is
+public by design, and access is controlled by the functions in `convex/` rather
+than by the address being hard to guess.
+
+It is a default rather than a required environment variable because the site is
+hosted on Lovable, which builds from this repository and gives us no reliable
+place to set build time variables. A hosted build therefore needs no
+configuration at all, and cannot end up with no database URL.
+
+Setting `VITE_CONVEX_URL` in `.env.local` overrides that default, which is what
+points local development at the development deployment. That override is the
+reason ordinary local work cannot touch the family's real numbers. If you ever
+need to point a local build at production deliberately, remove or comment out
+that line.
+
 ## Local setup
 
-1. Copy the Convex deployment URL into `.env.local` as `VITE_CONVEX_URL`.
+1. Copy the DEVELOPMENT Convex deployment URL into `.env.local` as
+   `VITE_CONVEX_URL`. Skipping this makes local development read and write the
+   real production ledger.
 2. Put a deploy key in `.env.local` as `CONVEX_DEPLOY_KEY`.
 3. Set the Clerk issuer variable to an empty string before the first push:
 
