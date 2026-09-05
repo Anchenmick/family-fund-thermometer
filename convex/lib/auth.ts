@@ -16,7 +16,7 @@ export const DEFAULT_SETTINGS = {
 
 export async function getSettings(ctx: Ctx) {
   const row = await ctx.db.query("settings").first();
-  if (!row) return DEFAULT_SETTINGS;
+  if (!row) return { ...DEFAULT_SETTINGS, adminEmails: [...DEFAULT_SETTINGS.adminEmails] };
   return {
     requireAuthForAdmin: row.requireAuthForAdmin,
     requireAuthForViewer: row.requireAuthForViewer,
