@@ -72,6 +72,13 @@ describe("requireAdmin", () => {
     const asAdmin = t.withIdentity({ email: ADMIN.toUpperCase(), subject: "u1" });
     await expect(asAdmin.run(async (ctx) => requireAdmin(ctx))).resolves.not.toBeNull();
   });
+
+  test("rejects a signed in identity with no email", async () => {
+    const t = convexTest(schema, modules);
+    await withSettings(t, { requireAuthForAdmin: true });
+    const noEmail = t.withIdentity({ subject: "u3" });
+    await expect(noEmail.run(async (ctx) => requireAdmin(ctx))).rejects.toThrow(/admin/i);
+  });
 });
 
 describe("requireViewer", () => {
@@ -92,5 +99,12 @@ describe("requireViewer", () => {
     await withSettings(t, { requireAuthForAdmin: true, requireAuthForViewer: false });
     await expect(t.run(async (ctx) => requireViewer(ctx))).resolves.toBeNull();
     await expect(t.run(async (ctx) => requireAdmin(ctx))).rejects.toThrow();
+  });
+
+  test("accepts a signed in identity with no email", async () => {
+    const t = convexTest(schema, modules);
+    await withSettings(t, { requireAuthForViewer: true });
+    const noEmail = t.withIdentity({ subject: "u3" });
+    await expect(noEmail.run(async (ctx) => requireViewer(ctx))).resolves.not.toBeNull();
   });
 });
