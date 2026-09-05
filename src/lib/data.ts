@@ -14,6 +14,13 @@ export interface MonthlyRecord {
   contributions: Record<string, number>;
   withdrawal?: number;
   repayment?: number;
+  /**
+   * The underlying document id, when the record came from Convex. Used to
+   * address the correct document for an edit regardless of the array
+   * position it currently sits at, since ledger.list is reactive and sorted
+   * by period, so positions can shift while a row is open for editing.
+   */
+  id?: string;
 }
 
 export const members: FamilyMember[] = [
