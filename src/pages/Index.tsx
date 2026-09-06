@@ -1,13 +1,28 @@
-import { members, loadRecords, calcTotalBalance, calcMonthlyTotals, TARGET, MonthlyRecord } from "@/lib/data";
+import { members, calcTotalBalance, calcMonthlyTotals } from "@/lib/data";
 import Thermometer from "@/components/Thermometer";
 import MemberCard from "@/components/MemberCard";
 import ContributionTable from "@/components/ContributionTable";
+import AuthControls from "@/components/AuthControls";
 import { Link } from "react-router-dom";
-import { useState } from "react";
 import { Settings } from "lucide-react";
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
+import { docToRecord } from "@/lib/convexAdapter";
 
 const Index = () => {
-  const [records] = useState<MonthlyRecord[]>(loadRecords);
+  const ledger = useQuery(api.ledger.list);
+  const settings = useQuery(api.settings.get);
+
+  if (ledger === undefined || settings === undefined) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-sm text-muted-foreground">Loading the fund...</p>
+      </div>
+    );
+  }
+
+  const records = ledger.map(docToRecord);
+  const target = settings.targetAmount;
 
   const USD_TO_EUR = 0.86078;
   const balance = calcTotalBalance(records);
@@ -15,7 +30,7 @@ const Index = () => {
   const monthlyTotals = calcMonthlyTotals(records);
   const monthsElapsed = monthlyTotals.length;
   const avgMonthly = monthsElapsed > 0 ? balance / monthsElapsed : 0;
-  const monthsRemaining = avgMonthly > 0 ? Math.ceil((TARGET - balance) / avgMonthly) : Infinity;
+  const monthsRemaining = avgMonthly > 0 ? Math.ceil((target - balance) / avgMonthly) : Infinity;
 
   return (
     <div className="min-h-screen bg-background">
@@ -24,21 +39,24 @@ const Index = () => {
           <div>
             <h1 className="text-2xl font-extrabold text-foreground tracking-tight">🏠 Family Savings Tracker</h1>
             <p className="text-sm text-muted-foreground">
-              Together to <span className="font-bold text-accent">${TARGET.toLocaleString()}</span>
+              Together to <span className="font-bold text-accent">${target.toLocaleString()}</span>
             </p>
           </div>
-          <Link
-            to="/admin"
-            className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1"
-          >
-            <Settings className="h-4 w-4" /> Admin
-          </Link>
+          <div className="flex items-center gap-4">
+            <AuthControls />
+            <Link
+              to="/admin"
+              className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1"
+            >
+              <Settings className="h-4 w-4" /> Admin
+            </Link>
+          </div>
         </div>
       </header>
 
       <main className="container max-w-5xl mx-auto px-4 py-8 space-y-10">
         <div className="grid md:grid-cols-2 gap-8 items-center">
-          <Thermometer current={balance} />
+          <Thermometer current={balance} target={target} />
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div className="rounded-lg bg-card border p-4 text-center">
@@ -47,7 +65,7 @@ const Index = () => {
                 <div className="text-xs text-muted-foreground">Current Balance</div>
               </div>
               <div className="rounded-lg bg-card border p-4 text-center">
-                <div className="text-2xl font-extrabold text-foreground">${(TARGET - balance).toLocaleString()}</div>
+                <div className="text-2xl font-extrabold text-foreground">${(target - balance).toLocaleString()}</div>
                 <div className="text-xs text-muted-foreground">Remaining</div>
               </div>
               <div className="rounded-lg bg-card border p-4 text-center">
@@ -68,7 +86,7 @@ const Index = () => {
           <h2 className="text-lg font-bold text-foreground mb-4">Members</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {members.map((m) => (
-              <MemberCard key={m.name} member={m} records={records} />
+              <MemberCard key={m.name} member={m} records={records} target={target} />
             ))}
           </div>
         </section>

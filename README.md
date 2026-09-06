@@ -4,6 +4,12 @@
 
 **URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
 
+## Data and authentication
+
+Ledger data is stored in Convex, not in the browser. Setup, seeding, and how
+to switch authentication on are documented in
+[docs/convex-and-auth.md](docs/convex-and-auth.md).
+
 ## How can I edit this code?
 
 There are several ways of editing your application.

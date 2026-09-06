@@ -9,12 +9,13 @@ import { Pencil, Check, X } from "lucide-react";
 
 interface ContributionTableProps {
   records: MonthlyRecord[];
-  onUpdate?: (index: number, record: MonthlyRecord) => void;
+  onUpdate?: (id: string, record: MonthlyRecord) => void;
   editable?: boolean;
 }
 
 const ContributionTable = ({ records, onUpdate, editable = false }: ContributionTableProps) => {
   const [editingRow, setEditingRow] = useState<number | null>(null);
+  const [editingRecord, setEditingRecord] = useState<MonthlyRecord | null>(null);
   const [editValues, setEditValues] = useState<Record<string, string>>({});
   const [editWithdrawal, setEditWithdrawal] = useState("0");
   const [editRepayment, setEditRepayment] = useState("0");
@@ -27,9 +28,11 @@ const ContributionTable = ({ records, onUpdate, editable = false }: Contribution
     setEditWithdrawal(String(record.withdrawal || 0));
     setEditRepayment(String(record.repayment || 0));
     setEditingRow(index);
+    setEditingRecord(record);
   };
 
-  const saveEdit = (index: number) => {
+  const saveEdit = () => {
+    if (!editingRecord?.id) return;
     const contributions: Record<string, number> = {};
     for (const m of members) {
       const val = Number(editValues[m.name]);
@@ -39,8 +42,9 @@ const ContributionTable = ({ records, onUpdate, editable = false }: Contribution
     const w = Number(editWithdrawal);
     const r = Number(editRepayment);
     if (isNaN(w) || w < 0 || isNaN(r) || r < 0) return;
-    onUpdate?.(index, { ...records[index], contributions, withdrawal: Math.round(w), repayment: Math.round(r) });
+    onUpdate?.(editingRecord.id, { ...editingRecord, contributions, withdrawal: Math.round(w), repayment: Math.round(r) });
     setEditingRow(null);
+    setEditingRecord(null);
   };
 
   return (
@@ -132,10 +136,10 @@ const ContributionTable = ({ records, onUpdate, editable = false }: Contribution
                   <TableCell className="text-center">
                     {isEditing ? (
                       <div className="flex gap-1 justify-center">
-                        <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => saveEdit(i)}>
+                        <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => saveEdit()}>
                           <Check className="h-4 w-4 text-green-600" />
                         </Button>
-                        <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setEditingRow(null)}>
+                        <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => { setEditingRow(null); setEditingRecord(null); }}>
                           <X className="h-4 w-4 text-destructive" />
                         </Button>
                       </div>
