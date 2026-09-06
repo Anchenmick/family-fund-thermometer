@@ -51,7 +51,7 @@ const Index = () => {
                 <div className="text-xs text-muted-foreground">Remaining</div>
               </div>
               <div className="rounded-lg bg-card border p-4 text-center">
-                <div className="text-2xl font-extrabold text-foreground">${avgMonthly.toLocaleString()}</div>
+                <div className="text-2xl font-extrabold text-foreground">${Math.round(avgMonthly).toLocaleString()}</div>
                 <div className="text-xs text-muted-foreground">Avg/Month</div>
               </div>
               <div className="rounded-lg bg-card border p-4 text-center">
