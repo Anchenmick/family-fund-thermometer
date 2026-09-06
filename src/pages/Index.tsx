@@ -3,8 +3,8 @@ import Thermometer from "@/components/Thermometer";
 import MemberCard from "@/components/MemberCard";
 import ContributionTable from "@/components/ContributionTable";
 import AuthControls from "@/components/AuthControls";
+import AdminLink from "@/components/AdminLink";
 import { Link } from "react-router-dom";
-import { Settings } from "lucide-react";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { docToRecord } from "@/lib/convexAdapter";
@@ -44,12 +44,7 @@ const Index = () => {
           </div>
           <div className="flex items-center gap-4">
             <AuthControls />
-            <Link
-              to="/admin"
-              className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1"
-            >
-              <Settings className="h-4 w-4" /> Admin
-            </Link>
+            <AdminLink />
           </div>
         </div>
       </header>

@@ -1,5 +1,5 @@
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
-import { isClerkConfigured } from "@/providers/clerkConfig";
+import { CLERK_PUBLISHABLE_KEY, isClerkConfigured } from "@/providers/clerkConfig";
 
 /**
  * Renders Clerk's sign-in control when, and only when, Clerk is actually
@@ -10,7 +10,7 @@ import { isClerkConfigured } from "@/providers/clerkConfig";
  * default and current shipping state.
  */
 const AuthControls = () => {
-  if (!isClerkConfigured(import.meta.env.VITE_CLERK_PUBLISHABLE_KEY)) {
+  if (!isClerkConfigured(CLERK_PUBLISHABLE_KEY)) {
     return null;
   }
 
