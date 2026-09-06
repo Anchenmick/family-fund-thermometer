@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import { ConvexProvider, ConvexReactClient } from "convex/react";
 import { ConvexProviderWithClerk } from "convex/react-clerk";
 import { ClerkProvider, useAuth } from "@clerk/clerk-react";
-import { isClerkConfigured } from "./clerkConfig";
+import { CLERK_PUBLISHABLE_KEY, isClerkConfigured } from "./clerkConfig";
 
 /**
  * The production Convex deployment.
@@ -26,7 +26,7 @@ const configuredUrl = (import.meta.env.VITE_CONVEX_URL as string | undefined)?.t
 const convexUrl = configuredUrl || PRODUCTION_CONVEX_URL;
 
 const convex = new ConvexReactClient(convexUrl);
-const clerkKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined;
+const clerkKey = CLERK_PUBLISHABLE_KEY;
 
 /**
  * Clerk is mounted only when a publishable key is present. With no key the
