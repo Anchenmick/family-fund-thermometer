@@ -24,7 +24,7 @@ export interface MonthlyRecord {
 }
 
 export const members: FamilyMember[] = [
-  { name: "Atem", shortName: "AT", monthlyDue: 1000 },
+  { name: "Atem", shortName: "AT", monthlyDue: 500 },
   { name: "Anyang", shortName: "AN", monthlyDue: 500 },
   { name: "Anchen", shortName: "AC", monthlyDue: 500 },
   { name: "Mummy", shortName: "MU", monthlyDue: 500 },
