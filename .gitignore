@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment files. Never commit these: they hold deploy keys and secrets.
+.env
+.env.*
+!.env.example
