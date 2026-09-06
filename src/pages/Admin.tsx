@@ -1,15 +1,20 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Plus } from "lucide-react";
+import { useMutation, useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
+import { Id } from "../../convex/_generated/dataModel";
+import { docToRecord } from "@/lib/convexAdapter";
+import { MONTH_ABBREVIATIONS } from "@/lib/period";
 import {
   members,
-  loadRecords,
-  saveRecords,
   calcMonthNet,
   calcTotalBalance,
   MonthlyRecord,
 } from "@/lib/data";
+import { extractErrorMessage } from "@/lib/convexErrors";
 import ContributionTable from "@/components/ContributionTable";
+import AuthControls from "@/components/AuthControls";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,13 +27,14 @@ import {
 } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
 
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const YEARS = ["2024", "2025", "2026", "2027", "2028"];
 
 const emptyAmounts = () => Object.fromEntries(members.map((m) => [m.name, "0"])) as Record<string, string>;
 
 const Admin = () => {
-  const [records, setRecords] = useState<MonthlyRecord[]>(loadRecords);
+  const ledger = useQuery(api.ledger.list);
+  const appendMonth = useMutation(api.ledger.append);
+  const updateMonth = useMutation(api.ledger.update);
 
   const [month, setMonth] = useState("Jan");
   const [year, setYear] = useState("2026");
@@ -36,24 +42,36 @@ const Admin = () => {
   const [withdrawal, setWithdrawal] = useState("0");
   const [repayment, setRepayment] = useState("0");
 
-  const persist = (updated: MonthlyRecord[]) => {
-    setRecords(updated);
-    saveRecords(updated);
-  };
+  if (ledger === undefined) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-sm text-muted-foreground">Loading the ledger...</p>
+      </div>
+    );
+  }
 
-  const handleUpdate = (index: number, record: MonthlyRecord) => {
-    const updated = [...records];
-    updated[index] = record;
-    persist(updated);
-    toast({ title: "Entry updated", description: record.month });
-  };
+  const records = ledger.map(docToRecord);
 
-  const handleAppend = () => {
-    const label = `${month} ${year}`;
-    if (records.some((r) => r.month === label)) {
-      toast({ title: "Duplicate month", description: `${label} already exists. Edit it inline instead.`, variant: "destructive" });
-      return;
+  const handleUpdate = async (id: string, record: MonthlyRecord) => {
+    try {
+      await updateMonth({
+        id: id as Id<"ledger">,
+        contributions: record.contributions,
+        withdrawal: record.withdrawal || 0,
+        repayment: record.repayment || 0,
+      });
+      toast({ title: "Entry updated", description: record.month });
+    } catch (error) {
+      toast({
+        title: "Could not update",
+        description: extractErrorMessage(error),
+        variant: "destructive",
+      });
     }
+  };
+
+  const handleAppend = async () => {
+    const monthIndex = MONTH_ABBREVIATIONS.indexOf(month);
     const contributions: Record<string, number> = {};
     for (const m of members) {
       const v = Number(amounts[m.name]);
@@ -69,17 +87,27 @@ const Admin = () => {
       toast({ title: "Invalid withdrawal/repayment", variant: "destructive" });
       return;
     }
-    const newRecord: MonthlyRecord = {
-      month: label,
-      contributions,
-      withdrawal: Math.round(w),
-      repayment: Math.round(r),
-    };
-    persist([...records, newRecord]);
-    setAmounts(emptyAmounts());
-    setWithdrawal("0");
-    setRepayment("0");
-    toast({ title: "Month added", description: `${label} • Net $${calcMonthNet(newRecord).toLocaleString()}` });
+
+    try {
+      await appendMonth({
+        year: Number(year),
+        monthIndex,
+        contributions,
+        withdrawal: Math.round(w),
+        repayment: Math.round(r),
+      });
+      const net = calcMonthNet({ month: `${month} ${year}`, contributions, withdrawal: Math.round(w), repayment: Math.round(r) });
+      setAmounts(emptyAmounts());
+      setWithdrawal("0");
+      setRepayment("0");
+      toast({ title: "Month added", description: `${month} ${year} • Net $${net.toLocaleString()}` });
+    } catch (error) {
+      toast({
+        title: "Could not add month",
+        description: extractErrorMessage(error),
+        variant: "destructive",
+      });
+    }
   };
 
   const balance = calcTotalBalance(records);
@@ -94,12 +122,15 @@ const Admin = () => {
               Running balance: <span className="font-bold text-foreground">${balance.toLocaleString()}</span>
             </p>
           </div>
-          <Link
-            to="/"
-            className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1"
-          >
-            <ArrowLeft className="h-4 w-4" /> Back to app
-          </Link>
+          <div className="flex items-center gap-4">
+            <AuthControls />
+            <Link
+              to="/"
+              className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1"
+            >
+              <ArrowLeft className="h-4 w-4" /> Back to app
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -108,7 +139,7 @@ const Admin = () => {
           <div>
             <h2 className="text-lg font-bold">Add new month</h2>
             <p className="text-xs text-muted-foreground">
-              Append-only ledger. Enter what happened this period — contributions, any withdrawal (loan out), any
+              Append-only ledger. Enter what happened this period, contributions, any withdrawal (loan out), any
               repayment received.
             </p>
           </div>
@@ -119,7 +150,7 @@ const Admin = () => {
               <Select value={month} onValueChange={setMonth}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  {MONTHS.map((m) => <SelectItem key={m} value={m}>{m}</SelectItem>)}
+                  {MONTH_ABBREVIATIONS.map((m) => <SelectItem key={m} value={m}>{m}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
@@ -167,7 +198,7 @@ const Admin = () => {
         <section>
           <h2 className="text-lg font-bold mb-2">Ledger</h2>
           <p className="text-xs text-muted-foreground mb-3">
-            Use the pencil icon only to correct a mistake — don't overwrite real history.
+            Use the pencil icon only to correct a mistake. Do not overwrite real history.
           </p>
           <ContributionTable records={records} onUpdate={handleUpdate} editable />
         </section>
