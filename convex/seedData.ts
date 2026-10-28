@@ -1,6 +1,6 @@
 /**
- * The fund's history as of the migration off localStorage.
- * Copied verbatim from defaultRecords in src/lib/data.ts.
+ * Placeholder months for a fresh deployment. Amounts are zero on purpose:
+ * real figures live only in the Convex database, never in this public repo.
  */
 export const SEED_MONTHS = [
   {

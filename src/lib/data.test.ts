@@ -10,19 +10,19 @@ import {
 
 const jan: MonthlyRecord = {
   month: "Jan 2026",
-  contributions: { Atem: 0, Anyang: 0 },
+  contributions: { Alex: 1000, Sam: 500 },
 };
 
 const feb: MonthlyRecord = {
   month: "Feb 2026",
-  contributions: { Atem: 0, Anyang: 0 },
-  withdrawal: 0,
+  contributions: { Alex: 1000, Sam: 0 },
+  withdrawal: 2000,
 };
 
 const mar: MonthlyRecord = {
   month: "Mar 2026",
-  contributions: { Atem: 0, Anyang: 0 },
-  repayment: 0,
+  contributions: { Alex: 1000, Sam: 500 },
+  repayment: 850,
 };
 
 describe("calcMonthContribTotal", () => {
@@ -41,7 +41,7 @@ describe("calcMonthNet", () => {
   });
 
   it("subtracts a withdrawal", () => {
-    expect(calcMonthNet(feb)).toBe(1000 - 0);
+    expect(calcMonthNet(feb)).toBe(1000 - 2000);
   });
 
   it("adds a repayment", () => {
@@ -51,7 +51,7 @@ describe("calcMonthNet", () => {
 
 describe("calcTotalBalance", () => {
   it("sums the net of every month, including negatives", () => {
-    expect(calcTotalBalance([jan, feb, mar])).toBe(1500 - 0 + 2350);
+    expect(calcTotalBalance([jan, feb, mar])).toBe(1500 - 1000 + 2350);
   });
 
   it("is zero for an empty ledger", () => {
@@ -61,18 +61,18 @@ describe("calcTotalBalance", () => {
 
 describe("calcMemberTotal", () => {
   it("sums one member across months", () => {
-    expect(calcMemberTotal([jan, feb, mar], "Atem")).toBe(3000);
+    expect(calcMemberTotal([jan, feb, mar], "Alex")).toBe(3000);
   });
 
   it("treats a member absent from a month as zero", () => {
-    expect(calcMemberTotal([jan, feb, mar], "Fran")).toBe(0);
+    expect(calcMemberTotal([jan, feb, mar], "Kim")).toBe(0);
   });
 });
 
 describe("calcMonthlyTotals", () => {
   it("accumulates a running balance in order", () => {
     const totals = calcMonthlyTotals([jan, feb, mar]);
-    expect(totals.map((t) => t.cumulative)).toEqual([1500, -7000, -4650]);
+    expect(totals.map((t) => t.cumulative)).toEqual([1500, 500, 2850]);
   });
 
   it("preserves the month labels", () => {

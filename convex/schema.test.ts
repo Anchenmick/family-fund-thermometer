@@ -12,7 +12,7 @@ describe("schema", () => {
       ctx.db.insert("ledger", {
         year: 2026,
         monthIndex: 0,
-        contributions: { Atem: 0, Anyang: 0 },
+        contributions: { Alex: 1000, Sam: 500 },
         withdrawal: 0,
         repayment: 0,
       })
@@ -20,7 +20,7 @@ describe("schema", () => {
 
     const doc = await t.run(async (ctx) => ctx.db.get(id));
     expect(doc?.year).toBe(2026);
-    expect(doc?.contributions.Atem).toBe(1000);
+    expect(doc?.contributions.Alex).toBe(1000);
   });
 
   test("stores the settings row with auth switched off", async () => {

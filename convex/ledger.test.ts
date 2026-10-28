@@ -8,7 +8,7 @@ const modules = import.meta.glob("./**/*.ts");
 const month = (year: number, monthIndex: number) => ({
   year,
   monthIndex,
-  contributions: { Atem: 0, Anyang: 0 },
+  contributions: { Alex: 1000, Sam: 500 },
   withdrawal: 0,
   repayment: 0,
 });
@@ -19,7 +19,7 @@ describe("ledger.append", () => {
     await t.mutation(api.ledger.append, month(2026, 0));
     const rows = await t.query(api.ledger.list, {});
     expect(rows).toHaveLength(1);
-    expect(rows[0].contributions.Atem).toBe(1000);
+    expect(rows[0].contributions.Alex).toBe(1000);
   });
 
   test("rejects a duplicate month", async () => {
@@ -37,13 +37,13 @@ describe("ledger.append", () => {
 
   test("rejects a negative contribution", async () => {
     const t = convexTest(schema, modules);
-    const bad = { ...month(2026, 0), contributions: { Atem: -5 } };
+    const bad = { ...month(2026, 0), contributions: { Alex: -5 } };
     await expect(t.mutation(api.ledger.append, bad)).rejects.toThrow(/negative/i);
   });
 
   test("rejects a fractional contribution", async () => {
     const t = convexTest(schema, modules);
-    const bad = { ...month(2026, 0), contributions: { Atem: 0 } };
+    const bad = { ...month(2026, 0), contributions: { Alex: 10.5 } };
     await expect(t.mutation(api.ledger.append, bad)).rejects.toThrow(/whole number/i);
   });
 
@@ -93,13 +93,13 @@ describe("ledger.update", () => {
 
     await t.mutation(api.ledger.update, {
       id,
-      contributions: { Atem: 0, Anyang: 0 },
-      withdrawal: 0,
-      repayment: 0,
+      contributions: { Alex: 1000, Sam: 750 },
+      withdrawal: 200,
+      repayment: 50,
     });
 
     const rows = await t.query(api.ledger.list, {});
-    expect(rows[0].contributions.Anyang).toBe(750);
+    expect(rows[0].contributions.Sam).toBe(750);
     expect(rows[0].withdrawal).toBe(200);
     expect(rows[0].repayment).toBe(50);
   });
@@ -110,7 +110,7 @@ describe("ledger.update", () => {
     await expect(
       t.mutation(api.ledger.update, {
         id,
-        contributions: { Atem: -1 },
+        contributions: { Alex: -1 },
         withdrawal: 0,
         repayment: 0,
       })

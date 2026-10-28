@@ -62,7 +62,7 @@ describe("seed.run", () => {
     expect(settings.requireAuthForViewer).toBe(false);
   });
 
-  test("reproduces the balance the app shows today", async () => {
+  test("seeds months that hold no amounts", async () => {
     const t = convexTest(schema, modules);
     await t.mutation(internal.seed.run, {});
     const rows = await t.query(api.ledger.list, {});
